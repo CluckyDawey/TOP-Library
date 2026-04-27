@@ -8,6 +8,25 @@
   --on-primary: #ffffff;
   --border: #d8dbe7;
   --text: #1d2939;
+  --bg: #f0f2f7;
+  --panel-bg: #ffffff;
+  --card-bg: #ffffff;
+  --btn-bg: #f3f4f6;
+  --btn-text: #1f2937;
+}
+
+body.dark {
+  --surface: #0f172a;
+  --surface-muted: #111827;
+  --primary: #3b82f6;
+  --on-primary: #ffffff;
+  --border: #334155;
+  --text: #e2e8f0;
+  --bg: #020617;
+  --panel-bg: #0f172a;
+  --card-bg: #111827;
+  --btn-bg: #1e293b;
+  --btn-text: #e2e8f0;
 }
 
 * {
@@ -18,8 +37,9 @@ body {
   margin: 0;
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   min-height: 100vh;
-  background: #f0f2f7;
+  background: var(--bg);
   color: var(--text);
+  transition: background var(--transition), color var(--transition);
 }
 
 .app-grid {
@@ -34,10 +54,10 @@ body {
 }
 
 .side-panel {
-  background: var(--surface);
+  background: var(--panel-bg);
   border-right: 1px solid var(--border);
   padding: 1rem;
-  transition: width var(--transition), min-width var(--transition);
+  transition: width var(--transition), min-width var(--transition), background var(--transition), border-color var(--transition);
   overflow: hidden;
   width: var(--panel-width);
   display: flex;
@@ -85,16 +105,21 @@ body {
 .book-list {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1.5fr));;
   gap: 1rem;
 }
 
 .book-card {
-  background: var(--surface);
+  height: 25vh;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.9rem;
+  padding: 0.5rem;
   box-shadow: 0 2px 6px rgba(30, 41, 59, 0.08);
+  transition: background var(--transition), border-color var(--transition);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .book-card h3 {
@@ -104,6 +129,15 @@ body {
 
 .book-card p {
   margin: 0.225rem 0;
+}
+
+.book-description, .book-buttons {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
 }
 
 .primary-btn,
@@ -123,9 +157,9 @@ body {
 }
 
 .secondary-btn {
-  background: #f3f4f6;
-  color: #1f2937;
-  border-color: #d1d5db;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-color: var(--border);
   padding: 0.58rem 0.75rem;
 }
 
@@ -200,4 +234,19 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   margin-top: 0.25rem;
+}
+
+.book-status, .book-remove {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.book-status {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  text-align: center;
 }

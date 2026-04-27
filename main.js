@@ -1,10 +1,56 @@
 const myLibrary = [];
+const THEME_STORAGE_KEY = 'top-library-theme';
 
-function Book(title, author, pages, read) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.read = read;
+function applyTheme(theme) {
+  const body = document.body;
+  const nightmodeToggle = document.getElementById('nightmode-toggle');
+
+  if (theme === 'dark') {
+    body.classList.add('dark');
+    if (nightmodeToggle) {
+      nightmodeToggle.textContent = 'Switch to Light Mode';
+      nightmodeToggle.setAttribute('aria-pressed', 'true');
+    }
+  } else {
+    body.classList.remove('dark');
+    if (nightmodeToggle) {
+      nightmodeToggle.textContent = 'Switch to Night Mode';
+      nightmodeToggle.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+function loadTheme() {
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  applyTheme(stored === 'dark' ? 'dark' : 'light');
+}
+
+class Book {
+  #title;
+  #author;
+  #pages;
+  #read;
+  constructor(title, author, pages, read) {
+      this.#title = title;
+      this.#author = author;
+      this.#pages = pages;
+      this.#read = read;
+  }
+
+  get title() { return this.#title; }
+  get author() { return this.#author; }
+  get pages() { return this.#pages; }
+  get read() { return this.#read; }
+
+  toggleRead() {
+    this.#read = !this.#read;
+  }
+
+  info() {
+    return `${this.#title} by ${this.#author}, ${this.#pages} pages, ${this.#read ? 'read' : 'not read yet'}`;
+  }
 }
 
 function addBookToLibrary(bookData) {
@@ -48,14 +94,47 @@ function displayBooks() {
 
   myLibrary.forEach((book, index) => {
     const card = document.createElement('article');
-    card.className = 'book-card';
-    card.innerHTML = `
-      <h3>${book.title}</h3>
-      <p><strong>Author:</strong> ${book.author}</p>
-      <p><strong>Pages:</strong> ${book.pages}</p>
-      <p><strong>Status:</strong> ${book.read ? 'Read' : 'Not read yet'}</p>
-      <button class="secondary-btn" data-remove="${index}">Remove</button>
-    `;
+    card.classList.add('book-card');
+
+    let buttons = document.createElement('div');
+    buttons.classList.add('book-buttons');
+
+    let description = document.createElement('div');
+    description.classList.add('book-description');
+
+    let Title = document.createElement('h3');
+    Title.classList.add('book-title');
+    Title.textContent = book.title;
+    card.appendChild(Title);
+
+    let Author = document.createElement('p');
+    Author.classList.add('book-author');
+    Author.textContent = `Author: ${book.author}`;
+    description.appendChild(Author);
+
+    let Pages = document.createElement('p');
+    Pages.classList.add('book-pages');
+    Pages.textContent = `Pages: ${book.pages}`;
+    description.appendChild(Pages);
+
+    let Read = document.createElement('button');
+    Read.classList.add('book-status');
+    Read.textContent = `Status: ${book.read ? 'Read' : 'Not read yet'}`;
+    buttons.appendChild(Read);
+
+    let remove = document.createElement('button');
+    remove.classList.add('book-remove');
+    remove.textContent = 'Remove';
+    remove.setAttribute('data-remove', index);
+    buttons.appendChild(remove);
+
+    card.appendChild(description);
+    card.appendChild(buttons);
+
+    Read.addEventListener('click', () => {
+      book.toggleRead();
+      displayBooks();
+    });
 
     const removeBtn = card.querySelector('[data-remove]');
     removeBtn.addEventListener('click', () => {
@@ -86,10 +165,20 @@ function initUI() {
   const appGrid = document.querySelector('.app-grid');
   const toggle = document.getElementById('panel-toggle');
   const openAdd = document.getElementById('open-add-book');
+  const nightmodeToggle = document.getElementById('nightmode-toggle');
   const modal = document.getElementById('modal');
   const closeBtn = document.getElementById('modal-close');
   const cancelBtn = document.getElementById('cancel-btn');
   const form = document.getElementById('add-book-form');
+
+  loadTheme();
+
+  if (nightmodeToggle) {
+    nightmodeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark');
+    });
+  }
 
   toggle.addEventListener('click', () => {
     panel.classList.toggle('collapsed');
